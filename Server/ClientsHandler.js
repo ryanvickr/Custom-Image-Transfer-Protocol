@@ -7,11 +7,8 @@ let singleton = require('./Singleton');
 module.exports = {
 
     handleClientJoining: function (sock) {
-        //
-        // Enter your code here
-        //
-        // you may need to develop some helper functions
-        // that are defined outside this export block
+        const timestamp = singleton.getTimestamp();
+        console.log(`Client-${timestamp} is connected at timestamp: ${timestamp}`);
     }
 };
 
