@@ -11,7 +11,7 @@ module.exports = {
         console.log(`Client-${timestamp} is connected at timestamp: ${timestamp}`);
 
         socket.on("data", (data) => {
-            console.log(`ITP packet received from Client-${timestamp} (${socket.remoteAddress}:${socket.remotePort})`);
+            console.log(`ITP packet received from Client-${timestamp} (${socket.remoteAddress}:${socket.remotePort})\n`);
             printPacketBit(data);
 
             const requestPacket = parseRequest(timestamp, data);
@@ -22,7 +22,7 @@ module.exports = {
         });
 
         socket.on("end", () => {
-            console.log(`Closed Client-${timestamp} (${socket.remoteAddress}:${socket.remotePort})`);
+            console.log(`Closed Client-${timestamp} (${socket.remoteAddress}:${socket.remotePort})\n`);
         });
     }
 

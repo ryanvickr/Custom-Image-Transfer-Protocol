@@ -16,16 +16,16 @@ try {
     console.error("ERROR: ", err);
 }
 
-function runServer() {
+async function runServer() {
     // Attempt to connect
     const client = new net.Socket();
     client
-        .connect({ port: args.port, host: args.host }, () => {
+        .connect({ port: args.port, host: args.host }, async () => {
             console.log(`Connected to ImageDB server on: ${args.host}:${args.port}`);
             client.write(ITPpacket.getBytePacket());
         })
         // When receiving data
-        .on("data", (data) => {
+        .on("data", async (data) => {
             console.log("ITP packet header received:\n");
             printPacketBit(data.slice(0, 12));
             console.log("\n")
@@ -40,13 +40,15 @@ function runServer() {
             );
 
             if (packet.header.responseType == 1) {
-                fs.writeFileSync(`./out/${packet.header.sequence}-${args.imageName}`, packet.payload);
+                const fileName = `./${packet.header.sequence}-${args.imageName}`
+                fs.writeFileSync(fileName, packet.payload);
+                await open(fileName);
             }
 
             client.end();
         })
         // When connection is closed
-        .on("close", (hadError) => {
+        .on("close", async (hadError) => {
             console.log("Closed connection.");
             client.end();
         });
