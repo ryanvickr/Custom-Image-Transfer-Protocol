@@ -1,6 +1,5 @@
-
 // Some code need to be added here, that are common for the module
-var timestamp = -1;
+var timestamp;
 
 module.exports = {
     init: function() {
@@ -12,7 +11,13 @@ module.exports = {
     //getSequenceNumber: return the current sequence number + 1
     //--------------------------
     getSequenceNumber: function() {
-        return timestamp + 1;
+        if (timestamp == (2^32 - 1)) {
+            timestamp = 0;
+        } else {
+            timestamp++;
+        }
+        
+        return timestamp;
     },
 
     //--------------------------
