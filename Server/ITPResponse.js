@@ -1,14 +1,15 @@
 let fs = require("fs");
 let singleton = require('./Singleton');
 
-var packet = {
-    header: new Uint8Array(12),
-    payload: undefined
-};
+var packet = undefined;
 
 module.exports = {
 
     init: function (imageName) { // feel free to add function parameters as needed
+        packet = {
+            header: new Uint8Array(12),
+            payload: undefined
+        };
         try {
             packet.payload = new Uint8Array(loadFile(imageName));
         } catch (err) {

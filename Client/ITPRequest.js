@@ -1,33 +1,29 @@
-// You may need to add some delectation here
-var packet = {
-	header : new Uint8Array(12),
-	payload : []
-};
+var packet = undefined;
 
 module.exports = {
 	init: function (version, imageName, timestamp) {
+		packet = {
+			header: new Uint8Array(12),
+			payload: undefined
+		};
+
 		storeBitPacket(packet.header, version, 0, 4); // version
 		storeBitPacket(packet.header, 0, 4, 20); // reserved space
 		storeBitPacket(packet.header, 0, 24, 8); // request type
 
 		storeBitPacket(packet.header, timestamp, 32, 32); // timestamp
-		
-		// image information
-		try {
-			const imageType = getImageType(imageName);
-			storeBitPacket(packet.header, imageType, 64, 4);
-			
-			const fileNameBytes = stringToBytes(imageName);
-			storeBitPacket(packet.header, fileNameBytes.length, 68, 28);
-			packet.payload = new Uint8Array(fileNameBytes);
 
-			printPacketBit(packet.header);
-			console.log("----")
-			printPacketBit(packet.payload);
-		} catch(err) {
-			console.error(err);
-			return;
-		}
+		// image information
+		const imageType = getImageType(imageName);
+		storeBitPacket(packet.header, imageType, 64, 4);
+
+		const fileNameBytes = stringToBytes(imageName);
+		storeBitPacket(packet.header, fileNameBytes.length, 68, 28);
+		packet.payload = new Uint8Array(fileNameBytes);
+
+		printPacketBit(packet.header);
+		console.log("----")
+		printPacketBit(packet.payload);
 	},
 
 	//--------------------------
@@ -41,23 +37,23 @@ module.exports = {
 //  TEMP DELETE LATER:
 // Prints the entire packet in bits format
 function printPacketBit(packet) {
-    var bitString = "";
+	var bitString = "";
 
-    for (var i = 0; i < packet.length; i++) {
-        // To add leading zeros
-        var b = "00000000" + packet[i].toString(2);
-        // To print 4 bytes per line
-        if (i > 0 && i % 4 == 0) bitString += "\n";
-        bitString += " " + b.substr(b.length - 8);
-    }
-    console.log(bitString);
+	for (var i = 0; i < packet.length; i++) {
+		// To add leading zeros
+		var b = "00000000" + packet[i].toString(2);
+		// To print 4 bytes per line
+		if (i > 0 && i % 4 == 0) bitString += "\n";
+		bitString += " " + b.substr(b.length - 8);
+	}
+	console.log(bitString);
 }
 
 function getImageType(imageName) {
 	const re = /(?:\.([^.]+))?$/;
 	const extension = re.exec(imageName.trim().toLowerCase())[1];
 
-	switch(extension) {
+	switch (extension) {
 		case "bmp":
 			return 1;
 		case "jpeg":
