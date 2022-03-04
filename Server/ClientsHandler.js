@@ -45,11 +45,43 @@ function parseRequest(timestamp, data) {
     console.log(`\nClient-${timestamp} requests:\n` +
                 `\t--ITP version: ${packet.header.version}\n` +
                 `\t--Timestamp: ${packet.header.timestamp}\n` +
-                `\t--Request type: ${packet.header.reqType}\n` + //TODO: CONVERT REQUEST TYPE
-                `\t--Image file extension: ${packet.header.imageType}\n` + // TODO: CONVERT IMAGE TYPE
+                `\t--Request type: ${getResponseType(packet.header.reqType)}\n` +
+                `\t--Image file extension: ${getImageType(packet.header.imageType)}\n` + // TODO: CONVERT IMAGE TYPE
                 `\t--Image file name: ${packet.payload}\n`);
 
     return packet;
+}
+
+// get the response type in word format
+function getResponseType(responseType) {
+    switch (responseType) {
+        case 0:
+            return "Query";
+        case 1:
+            return "Found";
+        case 2:
+            return "Not Found";
+        case 3:
+            return "Busy";
+    }
+}
+
+// get the file extension in string format
+function getImageType(imageType) {
+	switch (imageType) {
+		case 1: 
+            return "BMP";
+        case 2: 
+            return "JPEG";
+        case 3: 
+            return "GIF";    
+        case 4: 
+            return "PNG";
+        case 5: 
+            return "TIFF";
+        case 15: 
+            return "RAW";
+	}
 }
 
 
