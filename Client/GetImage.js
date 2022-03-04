@@ -8,11 +8,56 @@ let ITPpacket = require("./ITPRequest"); // uncomment this line after you run np
 
 const args = parseArgs(process.argv);
 
-// Attempt to connect
-const client = new net.Socket();
-client.connect({port : args.port, host: args.host});
-console.log()
+try {
+    // create packet
+    ITPpacket.init(args.version, args.imageName, 1234);
+    runServer();
+} catch (err) {
+    console.error("ERROR: ", err);
+}
 
+function runServer() {
+    // Attempt to connect
+    const client = new net.Socket();
+    client.connect({ port: args.port, host: args.host }, () => {
+        console.log(`Connected to ImageDB server on: ${args.host}:${args.port}`);
+        client.write(ITPpacket.getBytePacket());
+    })
+        // When receiving data
+        .on("data", (data) => {
+            console.log("Got response from server: \n", data);
+
+            // parse packet
+            const packet = parsePacket(data);
+            if (packet.header.responseType == 1) {
+                fs.writeFileSync(`./out/${packet.header.sequence}-${args.imageName}`, packet.payload);
+            } else {
+                console.error(`The file '${args.imageName}' does not exist on the server.`);
+            }
+
+            client.end();
+        })
+        // When connection is closed
+        .on("close", (hadError) => {
+            console.log("Closed connection.");
+            client.end();
+        });
+}
+
+
+// Parse the raw packet
+function parsePacket(data) {
+    return {
+        header: {
+            version: parseBitPacket(data, 0, 4),
+            responseType: parseBitPacket(data, 4, 8),
+            sequence: parseBitPacket(data, 12, 20),
+            timestamp: parseBitPacket(data, 32, 32),
+            fileSizeBytes: parseBitPacket(data, 64, 32)
+        },
+        payload: data.slice(12)
+    }
+}
 
 // Parse the command line args
 function parseArgs(args) {
