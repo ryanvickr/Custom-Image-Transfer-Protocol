@@ -1,22 +1,43 @@
+let fs = require("fs");
+let singleton = require('./Singleton');
 
-// You may need to add some delectation here
+var packet = {
+    header: new Uint8Array(12),
+    payload: undefined
+};
 
 module.exports = {
 
-    init: function () { // feel free to add function parameters as needed
-        //
-        // enter your code here
-        //
+    init: function (imageName) { // feel free to add function parameters as needed
+        try {
+            packet.payload = new Uint8Array(loadFile(imageName));
+        } catch (err) {
+            packet.payload = undefined;
+            console.error(`Could not find file ${imageName}`);    
+        }
+
+        storeBitPacket(packet.header, 7, 0, 4); // version = 7
+
+        const responseType = (packet.payload == undefined) ? 2 : 1;
+        storeBitPacket(packet.header, responseType, 4, 8); // responseType
+        storeBitPacket(packet.header, singleton.getSequenceNumber(), 12, 20); // sequence
+        storeBitPacket(packet.header, singleton.getTimestamp(), 32, 32); // timestamp
+
+        const payloadLen = (packet.payload == undefined) ? 0 : packet.payload.length;
+        storeBitPacket(packet.header, payloadLen, 64, 32);
     },
 
     //--------------------------
     //getpacket: returns the entire packet
     //--------------------------
     getPacket: function () {
-        // enter your code here
-        return "this should be a correct packet";
+        return (packet.payload == undefined) ? packet.header : new Uint8Array([...packet.header, ...packet.payload]);
     }
 };
+
+function loadFile(imageName) {
+    return fs.readFileSync(`./images/${imageName}`);
+}
 
 //// Some usefull methods ////
 // Feel free to use them, but DON NOT change or add any code in these methods.

@@ -6,11 +6,51 @@ let singleton = require('./Singleton');
 
 module.exports = {
 
-    handleClientJoining: function (sock) {
+    handleClientJoining: function (socket) {
         const timestamp = singleton.getTimestamp();
         console.log(`Client-${timestamp} is connected at timestamp: ${timestamp}`);
+
+        socket.on("data", (data) => {
+            console.log(`ITP packet received from Client-${timestamp} (${socket.remoteAddress}:${socket.remotePort})`);
+            printPacketBit(data);
+
+            const requestPacket = parseRequest(timestamp, data);
+            ITPpacket.init(requestPacket.payload);
+
+            const responsePacket = ITPpacket.getPacket();
+            socket.write(responsePacket);
+        });
+
+        socket.on("end", () => {
+            console.log(`Closed Client-${timestamp} (${socket.remoteAddress}:${socket.remotePort})`);
+        });
     }
+
 };
+
+function parseRequest(timestamp, data) {
+
+    const packet = {
+        header : {
+            version: parseBitPacket(data, 0, 4),
+            reserved: parseBitPacket(data, 4, 20),
+            reqType: parseBitPacket(data, 24, 8),
+            timestamp: parseBitPacket(data, 32, 32),
+            imageType: parseBitPacket(data, 64, 4),
+            fileNameBytes: parseBitPacket(data, 68, 28)
+        },
+        payload : bytesToString(data.slice(12))
+    }
+
+    console.log(`\nClient-${timestamp} requests:\n` +
+                `\t--ITP version: ${packet.header.version}\n` +
+                `\t--Timestamp: ${packet.header.timestamp}\n` +
+                `\t--Request type: ${packet.header.reqType}\n` + //TODO: CONVERT REQUEST TYPE
+                `\t--Image file extension: ${packet.header.imageType}\n` + // TODO: CONVERT IMAGE TYPE
+                `\t--Image file name: ${packet.payload}\n`);
+
+    return packet;
+}
 
 
 //// Some usefull methods ////
