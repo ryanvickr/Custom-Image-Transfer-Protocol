@@ -2,7 +2,7 @@ let net = require("net");
 let fs = require("fs");
 let open = require("open");
 
-let ITPpacket = require("./ITPRequest"); // uncomment this line after you run npm install command
+let ITPpacket = require("./ITPRequest");
 
 // Enter your code for the client functionality here
 
@@ -19,20 +19,28 @@ try {
 function runServer() {
     // Attempt to connect
     const client = new net.Socket();
-    client.connect({ port: args.port, host: args.host }, () => {
-        console.log(`Connected to ImageDB server on: ${args.host}:${args.port}`);
-        client.write(ITPpacket.getBytePacket());
-    })
+    client
+        .connect({ port: args.port, host: args.host }, () => {
+            console.log(`Connected to ImageDB server on: ${args.host}:${args.port}`);
+            client.write(ITPpacket.getBytePacket());
+        })
         // When receiving data
         .on("data", (data) => {
-            console.log("Got response from server: \n", data);
+            console.log("ITP packet header received:\n");
+            printPacketBit(data.slice(0, 12));
+            console.log("\n")
 
             // parse packet
             const packet = parsePacket(data);
+            console.log("Server sent:\n" +
+                `\t--ITP version = ${packet.header.version}\n` +
+                `\t--Response Type = ${getResponseType(packet.header.responseType)}\n` +
+                `\t--Sequence Number = ${packet.header.sequence}\n` +
+                `\t--Timestamp = ${packet.header.timestamp}\n`
+            );
+
             if (packet.header.responseType == 1) {
                 fs.writeFileSync(`./out/${packet.header.sequence}-${args.imageName}`, packet.payload);
-            } else {
-                console.error(`The file '${args.imageName}' does not exist on the server.`);
             }
 
             client.end();
@@ -56,6 +64,19 @@ function parsePacket(data) {
             fileSizeBytes: parseBitPacket(data, 64, 32)
         },
         payload: data.slice(12)
+    }
+}
+
+function getResponseType(responseType) {
+    switch (responseType) {
+        case 0:
+            return "Query";
+        case 1:
+            return "Found";
+        case 2:
+            return "Not Found";
+        case 3:
+            return "Busy";
     }
 }
 

@@ -20,10 +20,6 @@ module.exports = {
 		const fileNameBytes = stringToBytes(imageName);
 		storeBitPacket(packet.header, fileNameBytes.length, 68, 28);
 		packet.payload = new Uint8Array(fileNameBytes);
-
-		printPacketBit(packet.header);
-		console.log("----")
-		printPacketBit(packet.payload);
 	},
 
 	//--------------------------
@@ -34,21 +30,7 @@ module.exports = {
 	},
 };
 
-//  TEMP DELETE LATER:
-// Prints the entire packet in bits format
-function printPacketBit(packet) {
-	var bitString = "";
-
-	for (var i = 0; i < packet.length; i++) {
-		// To add leading zeros
-		var b = "00000000" + packet[i].toString(2);
-		// To print 4 bytes per line
-		if (i > 0 && i % 4 == 0) bitString += "\n";
-		bitString += " " + b.substr(b.length - 8);
-	}
-	console.log(bitString);
-}
-
+// Parse the filename for the extension, and return the corresponding code
 function getImageType(imageName) {
 	const re = /(?:\.([^.]+))?$/;
 	const extension = re.exec(imageName.trim().toLowerCase())[1];
