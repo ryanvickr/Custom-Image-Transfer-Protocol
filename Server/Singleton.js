@@ -1,23 +1,20 @@
-// Some code need to be added here, that are common for the module
 var timestamp;
+var sequence = Math.floor(Math.random() * 10);
+const sequenceBound = 2^20;
 
 module.exports = {
     init: function() {
-       timestamp = Math.floor(Math.random() * 998 + 1);
-       setInterval(() => {timestamp = this.getSequenceNumber()}, 10);
+       timestamp = Math.floor(Math.random() * 999);
+       setInterval(() => {timestamp = timerTick()}, 10);
     },
 
     //--------------------------
     //getSequenceNumber: return the current sequence number + 1
     //--------------------------
     getSequenceNumber: function() {
-        if (timestamp == (2^32 - 1)) {
-            timestamp = 0;
-        } else {
-            timestamp++;
-        }
-        
-        return timestamp;
+        sequence++;
+
+        return sequence % sequenceBound;
     },
 
     //--------------------------
@@ -27,3 +24,13 @@ module.exports = {
         return timestamp;
     }
 };
+
+function timerTick() {
+    if (timestamp == (2^32 - 1)) {
+        timestamp = 0;
+    } else {
+        timestamp++;
+    }
+    
+    return timestamp;
+}
