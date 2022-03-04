@@ -34,7 +34,7 @@ module.exports = {
 	//getBytePacket: returns the entire packet in bytes
 	//--------------------------
 	getBytePacket: function () {
-		return packet;
+		return new Uint8Array([...packet.header, ...packet.payload]);
 	},
 };
 
