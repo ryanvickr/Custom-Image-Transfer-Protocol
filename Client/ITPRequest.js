@@ -2,7 +2,7 @@
 var packet = {
 	header : new Uint8Array(12),
 	payload : []
-}
+};
 
 module.exports = {
 	init: function (version, imageName, timestamp) {
