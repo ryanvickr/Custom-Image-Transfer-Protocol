@@ -25,6 +25,7 @@ module.exports = {
     }
 };
 
+// increments the timer correctly
 function timerTick() {
     if (timestamp == (2^32 - 1)) {
         timestamp = 0;

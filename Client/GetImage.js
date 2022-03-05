@@ -3,6 +3,7 @@ let fs = require("fs");
 let open = require("open");
 
 let ITPpacket = require("./ITPRequest");
+const singleton = require("../Server/Singleton");
 
 // Enter your code for the client functionality here
 
@@ -10,7 +11,8 @@ const args = parseArgs(process.argv);
 
 try {
     // create packet
-    ITPpacket.init(args.version, args.imageName, 1234);
+    singleton.init();
+    ITPpacket.init(args.version, args.imageName, singleton.getTimestamp());
     runServer();
 } catch (err) {
     console.error("ERROR: ", err);
