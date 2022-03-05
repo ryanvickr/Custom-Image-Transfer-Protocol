@@ -28,6 +28,7 @@ module.exports = {
 
 };
 
+// parse the raw ITP request
 function parseRequest(timestamp, data) {
 
     const packet = {

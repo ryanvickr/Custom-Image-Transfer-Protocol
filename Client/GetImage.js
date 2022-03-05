@@ -71,6 +71,7 @@ function parsePacket(data) {
     }
 }
 
+// convert the query type code to a string
 function getResponseType(responseType) {
     switch (responseType) {
         case 0:

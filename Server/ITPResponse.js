@@ -36,6 +36,7 @@ module.exports = {
     }
 };
 
+// load a file from disk
 function loadFile(imageName) {
     return fs.readFileSync(`./images/${imageName}`);
 }
