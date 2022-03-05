@@ -47,7 +47,7 @@ function parseRequest(timestamp, data) {
                 `\t--ITP version: ${packet.header.version}\n` +
                 `\t--Timestamp: ${packet.header.timestamp}\n` +
                 `\t--Request type: ${getResponseType(packet.header.reqType)}\n` +
-                `\t--Image file extension: ${getImageType(packet.header.imageType)}\n` + // TODO: CONVERT IMAGE TYPE
+                `\t--Image file extension: ${getImageType(packet.header.imageType)}\n` +
                 `\t--Image file name: ${packet.payload}\n`);
 
     return packet;
