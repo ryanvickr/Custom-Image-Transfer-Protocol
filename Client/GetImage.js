@@ -5,8 +5,6 @@ let open = require("open");
 let ITPpacket = require("./ITPRequest");
 const singleton = require("../Server/Singleton");
 
-// Enter your code for the client functionality here
-
 const args = parseArgs(process.argv);
 
 try {
