@@ -5,7 +5,7 @@ var packet = undefined;
 
 module.exports = {
 
-    init: function (imageName) { // feel free to add function parameters as needed
+    init: function (imageName) {
         packet = {
             header: new Uint8Array(12),
             payload: undefined
@@ -40,9 +40,6 @@ module.exports = {
 function loadFile(imageName) {
     return fs.readFileSync(`./images/${imageName}`);
 }
-
-//// Some usefull methods ////
-// Feel free to use them, but DON NOT change or add any code in these methods.
 
 // Store integer value into specific bit poistion the packet
 function storeBitPacket(packet, value, offset, length) {
