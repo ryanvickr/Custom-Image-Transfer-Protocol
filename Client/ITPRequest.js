@@ -53,10 +53,6 @@ function getImageType(imageName) {
 	}
 }
 
-
-//// Some usefull methods ////
-// Feel free to use them, but DON NOT change or add any code in these methods.
-
 // Convert a given string to byte array
 function stringToBytes(str) {
 	var ch,
